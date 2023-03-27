@@ -2,6 +2,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include "msgq.h"
+
 
 
 /*initialises message queue and returns a pointer to a struct msgq.
