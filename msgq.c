@@ -11,7 +11,11 @@
 *in the message queue. the returned pointer is used in the
 *in the other API functions
 */
-struct msgq *msgq_init(int num_msgs){}
+struct msgq *msgq_init(int num_msgs){
+
+
+
+}
 
 
 
