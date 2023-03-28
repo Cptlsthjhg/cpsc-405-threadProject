@@ -4,7 +4,7 @@
 #include <pthread.h>
 #include "msgq.h"
 
-
+#define MAXSTRINGLENGTH 100
 
 /*initialises message queue and returns a pointer to a struct msgq.
 *num_msgs is the maximum number of messages that may be
@@ -12,8 +12,12 @@
 *in the other API functions
 */
 struct msgq *msgq_init(int num_msgs){
+int max = num_msgs;
+struct msgq * qptr;
 
+qptr = malloc ()
 
+return qptr;
 
 }
 
