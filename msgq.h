@@ -1,5 +1,5 @@
 
-typedef struct __msgq{
+typedef struct msgq{
 
     int capacity;
     //capacity is used as the maximum value for the queue.
