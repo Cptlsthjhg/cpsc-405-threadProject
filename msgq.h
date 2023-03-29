@@ -1,3 +1,4 @@
+#include "zemaphore.h"
 
 typedef struct node{
     char* data;
@@ -9,10 +10,14 @@ typedef struct msgq{
     int capacity;
     //although not necessary for a linked list, we will be capping
     //the linked list out as per instruction.
-
+    
+    int size;
+    //necessary for the enforcement of our capacity.
 
     //we will create our queue using a linked list.
     qNode* head;
+
+    zem_t* z;
 
 }Msgq;
 

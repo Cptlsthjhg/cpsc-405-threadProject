@@ -17,6 +17,10 @@ struct msgq *msgq_init(int num_msgs){
     theQ->capacity = num_msgs;
     theQ->size = 0;
     theQ->head = NULL;
+
+    struct __zem_t * ze;
+    zem_init(ze , 0);
+    theQ->z = ze
     return theQ;
 
 }
@@ -36,26 +40,27 @@ int msgq_send(struct msgq *mq, char *msg){
     strcpy(msgCopy , msg);
 
     if(mq->size==mq->capacity){
-    //block until there is room for the message.
+        //block until there is room for the message.
+        zem_wait(mq->z);
     }
     else{
-    //in this case, we can just add the message.
+        //in this case, we can just add the message.
         struct node * newNode = (Node*)malloc(sizeof(Node));
         char * stuff = (char*)malloc(sizeof(char*MAXSTRINGSIZE));
         newNode->data = stuff;
         newNode->next = NULL;
 
 
-        if(list->head==NULL){
+        if(msgq_empty(mq)==0){
             //if the lsit was empty, set the new node as the head.
-        mq->head = newNode;
+            mq->head = newNode;
         }
 
         else{
             //then we just go to the last node.
             Node* current = list->head;
             while(current->next != NULL){
-            current = current->next;
+                current = current->next;
             }
 
             //now that we are at the last node, we throw the new one on the end.
@@ -72,7 +77,34 @@ int msgq_send(struct msgq *mq, char *msg){
  *The returned message on the heap. The funtion that receives the
  *message can 'free()' it when it is no longer needed.
  */
-char *msgq_recv(struct msgq *mq){}
+char *msgq_recv(struct msgq *mq){
+
+    //Dequeue
+
+    //if we are in the case where the q is empty, return NULL.
+    if(msgq_empty(mq)==0)
+    {return NULL;}
+
+
+    //first we obtain the node at the head position
+    struct node* localNode = mq->head;
+    //then we extract the data from the node
+    char* payload = (char*)malloc(sizeof(char*MAXSTRINGLENGTH));
+    strcpy(payload, localNode->data);
+    //we need to change the head to next before deletion.
+    mq->head = localNode->next;
+    //then we free the node (deleting it)
+    free(localNode);
+    //post if the q was full.
+    if(mq->size==mq->capacity){
+        zem_post(z);
+    }
+    mq->size = mq->size - 1;
+    //return the payload (data)
+
+    return payload;
+
+}
 
 
 
@@ -82,7 +114,9 @@ char *msgq_recv(struct msgq *mq){}
  *and interrupts, the length returned may be incorrect by the time
  *it is used.
  */
-int msgq_len(struct msgq *mq){}
+int msgq_len(struct msgq *mq){
+    return mq->size;
+}
 
 
 
@@ -90,13 +124,35 @@ int msgq_len(struct msgq *mq){}
 /*displays all of the messages in mq to stdout.
  *mq is returned from msgq_init.
  */
-void msgq_show(struct msgq *mq){}
+void msgq_show(struct msgq *mq){
+
+    struct node* localNode = mq->head;
+    char* payload = (char*)malloc(sizeof(char*MAXSTRINGLENGTH));
+    strcpy(payload, localNode->data);
+    printf("contents: %s\n",payload);
+
+    while(localNode->next!=NULL){
+        localNode = localNode->next;
+        strcpy(payload, localNode->data);
+        printf("contents: %s\n",payload);
+
+    }
+
+    printf("reached end of msgq.\n"); 
+}
 
 
 /*
  *
  */
-int msgq_empty(struct msgq *mq){}
+int msgq_empty(struct msgq *mq){
+
+    if(mq->head==NULL){
+        //this is the case where the q is empty:
+        return 0;
+    }
+    else{return 1;}
+}
 
 
 
@@ -104,7 +160,8 @@ int msgq_empty(struct msgq *mq){}
  *
  */
 char * msgq_peek(struct msgq *mq){
-
-
-
+    struct node* localNode = mq->head;
+    char* payload = (char*)malloc(sizeof(char*MAXSTRINGLENGTH));
+    strcpy(payload, localNode->data);
+    return payload;
 }
