@@ -25,7 +25,7 @@ struct msgq *msgq_init(int num_msgs){
     theQ->size = 0;
     theQ->head = NULL;
 
-    struct __zem_t * ze;
+    struct __zem_t * ze = (struct __zem_t *) malloc(sizeof(struct __zem_t));
     zem_init(ze , 0);
     theQ->z = ze;
     return theQ;
