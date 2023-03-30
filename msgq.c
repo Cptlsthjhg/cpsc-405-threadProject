@@ -46,6 +46,7 @@ int msgq_send(struct msgq *mq, char *msg){
     char* msgCopy = (char*)malloc(sizeof(char) * MAXSTRINGLENGTH );
     strcpy(msgCopy , msg);
 
+
     if(mq->size==mq->capacity){
         //block until there is room for the message.
         zem_wait(mq->z);
@@ -53,10 +54,10 @@ int msgq_send(struct msgq *mq, char *msg){
     else{
         //in this case, we can just add the message.
         struct node * newNode = (Node*)malloc(sizeof(Node));
-        char * stuff = (char*)malloc(sizeof(char)*MAXSTRINGLENGTH);
-        newNode->data = stuff;
+        newNode->data=msgCopy;
         newNode->next = NULL;
 
+        //printf("DEBUG: MSGCOPY: %s \n",newNode->data); 
 
         if(msgq_empty(mq)==0){
             //if the lsit was empty, set the new node as the head.
