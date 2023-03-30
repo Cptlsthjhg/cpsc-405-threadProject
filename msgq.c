@@ -135,6 +135,12 @@ void msgq_show(struct msgq *mq){
 
     struct node* localNode = mq->head;
     char* payload = (char*)malloc(sizeof(char) * MAXSTRINGLENGTH );
+
+    if(localNode == NULL){
+    perror("HEAD EMPTY. RETURNING FROM MSGQ_SHOW.");
+    return;}
+
+    if(localNode->data != NULL){
     strcpy(payload, localNode->data);
     printf("contents: %s\n",payload);
 
@@ -147,8 +153,8 @@ void msgq_show(struct msgq *mq){
 
     printf("reached end of msgq.\n"); 
 }
-
-
+else{perror("msgq_show encountered empty mq.");}
+}
 /*
  *
  */
