@@ -3,15 +3,21 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <string.h>
+#include "zemaphore.h"
 #include "msgq.h"
 
-#define MAXSTRINGLENGTH 100
+
+//see line 18.
+//#define MAXSTRINGLENGTH 100
 
 /*initialises message queue and returns a pointer to a struct msgq.
  *num_msgs is the maximum number of messages that may be
  *in the message queue. the returned pointer is used in the
  *in the other API functions
  */
+
+int const MAXSTRINGLENGTH = 100;
+
 struct msgq *msgq_init(int num_msgs){
 
     struct msgq* theQ  = (struct msgq * ) malloc(sizeof(struct msgq));
@@ -37,7 +43,7 @@ struct msgq *msgq_init(int num_msgs){
  *msgq_send returns 1 for success and -1 for failure.
  */
 int msgq_send(struct msgq *mq, char *msg){
-    char* msgCopy = (char*)malloc(sizeof( char * (MAXSTRINGLENGTH) ));
+    char* msgCopy = (char*)malloc(sizeof(char) * MAXSTRINGLENGTH );
     strcpy(msgCopy , msg);
 
     if(mq->size==mq->capacity){
@@ -47,7 +53,7 @@ int msgq_send(struct msgq *mq, char *msg){
     else{
         //in this case, we can just add the message.
         struct node * newNode = (Node*)malloc(sizeof(Node));
-        char * stuff = (char*)malloc(sizeof(char*MAXSTRINGSIZE));
+        char * stuff = (char*)malloc(sizeof(char)*MAXSTRINGLENGTH);
         newNode->data = stuff;
         newNode->next = NULL;
 
@@ -59,7 +65,7 @@ int msgq_send(struct msgq *mq, char *msg){
 
         else{
             //then we just go to the last node.
-            Node* current = list->head;
+            Node* current = mq->head;
             while(current->next != NULL){
                 current = current->next;
             }
@@ -70,7 +76,7 @@ int msgq_send(struct msgq *mq, char *msg){
         //then we have to increase the size of the list.
         mq->size = mq->size + 1;
     }
-
+return 1;
 }
 
 
@@ -90,7 +96,7 @@ char *msgq_recv(struct msgq *mq){
     //first we obtain the node at the head position
     struct node* localNode = mq->head;
     //then we extract the data from the node
-    char* payload = (char*)malloc(sizeof(char * (MAXSTRINGLENGTH) ));
+    char* payload = (char*)malloc(sizeof(char) * MAXSTRINGLENGTH );
     strcpy(payload, localNode->data);
     //we need to change the head to next before deletion.
     mq->head = localNode->next;
@@ -98,7 +104,7 @@ char *msgq_recv(struct msgq *mq){
     free(localNode);
     //post if the q was full.
     if(mq->size==mq->capacity){
-        zem_post(z);
+        zem_post(mq->z);
     }
     mq->size = mq->size - 1;
     //return the payload (data)
@@ -128,7 +134,7 @@ int msgq_len(struct msgq *mq){
 void msgq_show(struct msgq *mq){
 
     struct node* localNode = mq->head;
-    char* payload = (char*)malloc(sizeof(char * (MAXSTRINGLENGTH) ));
+    char* payload = (char*)malloc(sizeof(char) * MAXSTRINGLENGTH );
     strcpy(payload, localNode->data);
     printf("contents: %s\n",payload);
 
@@ -162,7 +168,7 @@ int msgq_empty(struct msgq *mq){
  */
 char * msgq_peek(struct msgq *mq){
     struct node* localNode = mq->head;
-    char* payload = (char*)malloc(sizeof(char * (MAXSTRINGLENGTH) ));
+    char* payload = (char*)malloc(sizeof(char) * MAXSTRINGLENGTH);
     strcpy(payload, localNode->data);
     return payload;
 }
