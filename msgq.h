@@ -15,7 +15,7 @@ typedef struct msgq{
     //necessary for the enforcement of our capacity.
 
     //we will create our queue using a linked list.
-    qNode* head;
+    Node* head;
 
     zem_t* z;
 
