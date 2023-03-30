@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <string.h>
 #include "msgq.h"
 
 #define MAXSTRINGLENGTH 100
@@ -13,14 +14,14 @@
  */
 struct msgq *msgq_init(int num_msgs){
 
-    struct msgq* theQ  = (msgq*) malloc(sizeof(msgq));
+    struct msgq* theQ  = (struct msgq * ) malloc(sizeof(struct msgq));
     theQ->capacity = num_msgs;
     theQ->size = 0;
     theQ->head = NULL;
 
     struct __zem_t * ze;
     zem_init(ze , 0);
-    theQ->z = ze
+    theQ->z = ze;
     return theQ;
 
 }
@@ -36,7 +37,7 @@ struct msgq *msgq_init(int num_msgs){
  *msgq_send returns 1 for success and -1 for failure.
  */
 int msgq_send(struct msgq *mq, char *msg){
-    char* msgCopy = (char*)malloc(sizeof(char*MAXSTRINGLENGTH));
+    char* msgCopy = (char*)malloc(sizeof( char * (MAXSTRINGLENGTH) ));
     strcpy(msgCopy , msg);
 
     if(mq->size==mq->capacity){
@@ -89,7 +90,7 @@ char *msgq_recv(struct msgq *mq){
     //first we obtain the node at the head position
     struct node* localNode = mq->head;
     //then we extract the data from the node
-    char* payload = (char*)malloc(sizeof(char*MAXSTRINGLENGTH));
+    char* payload = (char*)malloc(sizeof(char * (MAXSTRINGLENGTH) ));
     strcpy(payload, localNode->data);
     //we need to change the head to next before deletion.
     mq->head = localNode->next;
@@ -127,7 +128,7 @@ int msgq_len(struct msgq *mq){
 void msgq_show(struct msgq *mq){
 
     struct node* localNode = mq->head;
-    char* payload = (char*)malloc(sizeof(char*MAXSTRINGLENGTH));
+    char* payload = (char*)malloc(sizeof(char * (MAXSTRINGLENGTH) ));
     strcpy(payload, localNode->data);
     printf("contents: %s\n",payload);
 
@@ -161,7 +162,7 @@ int msgq_empty(struct msgq *mq){
  */
 char * msgq_peek(struct msgq *mq){
     struct node* localNode = mq->head;
-    char* payload = (char*)malloc(sizeof(char*MAXSTRINGLENGTH));
+    char* payload = (char*)malloc(sizeof(char * (MAXSTRINGLENGTH) ));
     strcpy(payload, localNode->data);
     return payload;
 }

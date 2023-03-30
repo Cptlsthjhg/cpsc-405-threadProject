@@ -1,4 +1,4 @@
-#include "zemaphore.h"
+//#include "zemaphore.h"
 
 typedef struct node{
     char* data;
@@ -17,7 +17,7 @@ typedef struct msgq{
     //we will create our queue using a linked list.
     Node* head;
 
-    zem_t* z;
+    struct __zem_t* z;
 
 }Msgq;
 
