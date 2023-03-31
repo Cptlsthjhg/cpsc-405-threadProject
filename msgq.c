@@ -51,7 +51,7 @@ int msgq_send(struct msgq *mq, char *msg){
 
     if(mq->size==mq->capacity){
         //block until there is room for the message.
-        printf("MQ BLOCKING BECAUSE FULL\n"); 
+        printf("MQ WAITING BECAUSE FULL\n"); 
         zem_wait(mq->zf);
     }
     else{
@@ -65,8 +65,8 @@ int msgq_send(struct msgq *mq, char *msg){
         if(msgq_empty(mq)==0){
             //if the lsit was empty, set the new node as the head.
             printf("MQ POSTING BECAUSE EMPTY (NOW FILLING)\n"); 
-            zem_post(mq->ze);
             mq->head = newNode;
+            zem_post(mq->ze);
         }
 
         else{
@@ -96,7 +96,7 @@ char *msgq_recv(struct msgq *mq){
 
     if(msgq_empty(mq)==0)
     { 
-        printf("MQ POSTING BECAUSE EMPTY (WAITING FOR FILL)\n"); 
+        printf("MQ WAITING BECAUSE EMPTY (WAITING FOR FILL)\n"); 
         zem_wait(mq->ze);
     }
 
@@ -105,6 +105,10 @@ char *msgq_recv(struct msgq *mq){
     struct node* localNode = mq->head;
     //then we extract the data from the node
     char* payload = (char*)malloc(sizeof(char) * MAXSTRINGLENGTH );
+    //if(localNode == NULL){
+      //  perror("ENCOUNTERED NULL WITH MSGQ NOT EMPTY.");
+        //exit -1;
+    //}
     strcpy(payload, localNode->data);
     //we need to change the head to next before deletion.
     mq->head = localNode->next;
