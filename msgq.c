@@ -152,7 +152,7 @@ void msgq_show(struct msgq *mq){
 
     }
 
-    printf("reached end of msgq.\n"); 
+    printf("read all the way through msgq ( msgq_show() ) \n"); 
 }
 else{perror("msgq_show encountered empty mq.");}
 }
