@@ -25,9 +25,11 @@ struct msgq *msgq_init(int num_msgs){
     theQ->size = 0;
     theQ->head = NULL;
 
+    struct __zem_t * zf = (struct __zem_t *) malloc(sizeof(struct __zem_t));
     struct __zem_t * ze = (struct __zem_t *) malloc(sizeof(struct __zem_t));
     zem_init(ze , 0);
-    theQ->z = ze;
+    theQ->zf = zf;
+    theQ->ze = ze;
     return theQ;
 
 }
@@ -49,7 +51,8 @@ int msgq_send(struct msgq *mq, char *msg){
 
     if(mq->size==mq->capacity){
         //block until there is room for the message.
-        zem_wait(mq->z);
+        printf("MQ BLOCKING BECAUSE FULL\n"); 
+        zem_wait(mq->zf);
     }
     else{
         //in this case, we can just add the message.
@@ -61,6 +64,8 @@ int msgq_send(struct msgq *mq, char *msg){
 
         if(msgq_empty(mq)==0){
             //if the lsit was empty, set the new node as the head.
+            printf("MQ POSTING BECAUSE EMPTY (NOW FILLING)\n"); 
+            zem_post(mq->ze);
             mq->head = newNode;
         }
 
@@ -89,9 +94,11 @@ char *msgq_recv(struct msgq *mq){
 
     //Dequeue
 
-    //if we are in the case where the q is empty, return NULL.
     if(msgq_empty(mq)==0)
-    {return NULL;}
+    { 
+        printf("MQ POSTING BECAUSE EMPTY (WAITING FOR FILL)\n"); 
+        zem_wait(mq->ze);
+    }
 
 
     //first we obtain the node at the head position
@@ -105,7 +112,8 @@ char *msgq_recv(struct msgq *mq){
     free(localNode);
     //post if the q was full.
     if(mq->size==mq->capacity){
-        zem_post(mq->z);
+        printf("MQ POSTING BECAUSE FULL (EMPTYING NOW)\n"); 
+        zem_post(mq->zf);
     }
     mq->size = mq->size - 1;
     //return the payload (data)

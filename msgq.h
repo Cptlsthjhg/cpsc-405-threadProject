@@ -17,7 +17,8 @@ typedef struct msgq{
     //we will create our queue using a linked list.
     Node* head;
 
-    struct __zem_t* z;
+    struct __zem_t* zf;
+    struct __zem_t* ze;
 
 }Msgq;
 

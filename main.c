@@ -61,7 +61,7 @@ void *passiton(void *arg) {
 int main(int argc, char *argv[]) {
     pthread_t p1, p2;
     mq = msgq_init(MSGQLEN);
-    char test = '1';
+    char test = '3';
     if (argc == 2)
         test = argv[1][0];
     switch (test) {
@@ -87,6 +87,23 @@ int main(int argc, char *argv[]) {
         pthread_join(p1, NULL);
         pthread_join(p2, NULL);
         break;
+      case '3':
+        printf("This is our test case\n");
+        pthread_create(&p1, NULL, promtAndSend, NULL);
+        pthread_join(p1, NULL);
+  
+
+        //this should block until p2 reads out.
+        pthread_create(&p1, NULL, promtAndSend, NULL);
+        pthread_create(&p2, NULL, recvMsgs,NULL);
+        
+        pthread_join(p1, NULL);
+        pthread_join(p2, NULL);
+
+        pthread_create(&p2, NULL, recvMsgs,NULL);
+        pthread_join(p2, NULL);
+        break;
+
       default:
         printf("invalid test selection!\n");
         break;
